@@ -83,7 +83,9 @@ namespace EPocalipse.Json.JsonView
             dialog.Title = "Select a JSON file";
             if (dialog.ShowDialog() == DialogResult.OK)
             {
+                this.Cursor = Cursors.WaitCursor;
                 this.LoadFromFile(dialog.FileName);
+                this.Cursor = Cursors.Default;
             }
         }
 
