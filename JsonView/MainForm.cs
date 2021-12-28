@@ -39,6 +39,7 @@ namespace EPocalipse.Json.JsonView
             string json = File.ReadAllText(fileName);
             JsonViewer.ShowTab(Tabs.Viewer);
             JsonViewer.Json = json;
+            this.Text = fileName;
         }
 
         private void LoadFromClipboard()
@@ -77,7 +78,7 @@ namespace EPocalipse.Json.JsonView
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter =
-               "Yahoo! Pipe files (*.run)|*.run|json files (*.json)|*.json|All files (*.*)|*.*";
+               "json files (*.json)|*.json|All files (*.*)|*.*";
             dialog.InitialDirectory = Application.StartupPath;
             dialog.Title = "Select a JSON file";
             if (dialog.ShowDialog() == DialogResult.OK)
