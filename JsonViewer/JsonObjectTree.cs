@@ -46,10 +46,21 @@ namespace EPocalipse.Json.Viewer
 
         private static JsonObject ConvertToObject(string id, object jsonObject)
         {
-            JsonObject obj = CreateJsonObject(jsonObject);
+            JsonObject obj = null;
+
+            if (jsonObject != null)
+            {
+                obj = CreateJsonObject(jsonObject);
+            }
+            else
+            {
+                obj = CreateJsonObject("Null");
+            }
+
             obj.Id = id;
             AddChildren(jsonObject, obj);
             return obj;
+
         }
 
         private static void AddChildren(object jsonObject, JsonObject obj)
@@ -84,22 +95,25 @@ namespace EPocalipse.Json.Viewer
                 obj.JsonType = JsonType.Object;
             else
             {
-            	if (typeof(string) == jsonObject.GetType()) {
-            		Match match = dateRegex.Match(jsonObject as string);
-        			if (match.Success) {
-            			// I'm not sure why this is match.Groups[1] and not match.Groups[0]
-            			// we need to convert milliseconds to windows ticks (one tick is one hundred nanoseconds (e-9))
-            			Int64 ticksSinceEpoch = Int64.Parse(match.Groups[1].Value) * (Int64)10e3;
-            			jsonObject = DateTime.SpecifyKind(new DateTime(1970, 1, 1).Add(new TimeSpan(ticksSinceEpoch)), DateTimeKind.Utc);
-            			// Take care of the timezone offset
-            			if (!string.IsNullOrEmpty(match.Groups[2].Value)) {
-            				Int64 timeZoneOffset = Int64.Parse(match.Groups[2].Value);
-            				jsonObject = ((DateTime)jsonObject).AddHours(timeZoneOffset/100);
-            				// Some timezones like India Tehran and Nepal have fractional offsets from GMT
-            				jsonObject = ((DateTime)jsonObject).AddMinutes(timeZoneOffset%100);
-            			}
-            		}
-            	}
+                if (typeof(string) == jsonObject.GetType())
+                {
+                    Match match = dateRegex.Match(jsonObject as string);
+                    if (match.Success)
+                    {
+                        // I'm not sure why this is match.Groups[1] and not match.Groups[0]
+                        // we need to convert milliseconds to windows ticks (one tick is one hundred nanoseconds (e-9))
+                        Int64 ticksSinceEpoch = Int64.Parse(match.Groups[1].Value) * (Int64)10e3;
+                        jsonObject = DateTime.SpecifyKind(new DateTime(1970, 1, 1).Add(new TimeSpan(ticksSinceEpoch)), DateTimeKind.Utc);
+                        // Take care of the timezone offset
+                        if (!string.IsNullOrEmpty(match.Groups[2].Value))
+                        {
+                            Int64 timeZoneOffset = Int64.Parse(match.Groups[2].Value);
+                            jsonObject = ((DateTime)jsonObject).AddHours(timeZoneOffset / 100);
+                            // Some timezones like India Tehran and Nepal have fractional offsets from GMT
+                            jsonObject = ((DateTime)jsonObject).AddMinutes(timeZoneOffset % 100);
+                        }
+                    }
+                }
                 obj.JsonType = JsonType.Value;
                 obj.Value = jsonObject;
             }
